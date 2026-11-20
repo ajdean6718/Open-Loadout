@@ -2,11 +2,13 @@
   "pr": {
     "number": 12,
     "title": "Example: add the research section",
-    "url": "https://github.com/OWNER/REPO/pull/12"
+    "url": "https://github.com/OWNER/REPO/pull/12",
+    "head": "abc1234"
   },
   "generated": "1 Jan 2027, 09:30 UTC",
   "reviewer": {
-    "name": "CodeRabbit"
+    "name": "CodeRabbit",
+    "status": "review finished"
   },
   "reviewed": true,
   "verdict": {
@@ -81,8 +83,13 @@
       "source": "Claude"
     },
     {
-      "label": "No secrets or personal details",
-      "detail": "Nothing that looks like a password, key, or email address was added.",
+      "label": "No passwords, keys, or email addresses",
+      "detail": "Nothing that looks like one was added.",
+      "source": "Claude"
+    },
+    {
+      "label": "No leftover merge markers",
+      "detail": "No unfinished merge text was left in the files.",
       "source": "Claude"
     },
     {

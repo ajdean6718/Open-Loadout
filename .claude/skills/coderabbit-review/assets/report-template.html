@@ -161,6 +161,7 @@ a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outli
 .count[data-level="warning"] .num { color: var(--warning); }
 .count[data-level="pass"] .num { color: var(--pass); }
 .count[data-zero="true"] .num { color: var(--muted); }
+.count .num.pending { font-size: 18px; line-height: 1.85; font-weight: 500; }
 
 /* Sections */
 section { display: flex; flex-direction: column; gap: 12px; }
@@ -296,7 +297,9 @@ footer { color: var(--muted); font-size: 13px; }
   add(head, el("h1", null, (pr.number ? "#" + pr.number + " " : "") + (pr.title || "Pull request")));
   var meta = el("div", "meta");
   var bits = [];
-  if (data.reviewer && data.reviewer.name) bits.push("Reviewer: " + data.reviewer.name);
+  if (data.reviewer && data.reviewer.name) {
+    bits.push("Reviewer: " + data.reviewer.name + (data.reviewer.status ? " (" + data.reviewer.status + ")" : ""));
+  }
   if (data.generated) bits.push("Report made " + data.generated);
   meta.textContent = bits.join("  ·  ");
   if (pr.url && /^https:\/\//.test(pr.url)) {
@@ -334,15 +337,22 @@ footer { color: var(--muted); font-size: 13px; }
   }
 
   /* Counts */
-  function countOf(level) { return findings.filter(function (f) { return f.level === level; }).length; }
+  var notReviewed = data.reviewed === false;
+  function countOf(level) {
+    var n = findings.filter(function (f) { return f.level === level; }).length;
+    /* Before a review exists, a zero would read as an all-clear. Show "not yet" unless a house check found something. */
+    return notReviewed && n === 0 ? null : n;
+  }
   var counts = el("div", "counts");
   [["critical", countOf("critical"), "Must fix"], ["warning", countOf("warning"), "Worth a look"],
    ["suggestion", countOf("suggestion"), "Small suggestions"], ["pass", passed.length, "Checks passed"]]
     .forEach(function (c) {
       var tile = el("div", "count");
       tile.dataset.level = c[0];
-      tile.dataset.zero = String(c[1] === 0);
-      add(tile, el("div", "num", String(c[1])), el("div", "what", c[2]));
+      tile.dataset.zero = String(!c[1]);
+      var num = el("div", "num", c[1] === null ? "not yet" : String(c[1]));
+      if (c[1] === null) num.classList.add("pending");
+      add(tile, num, el("div", "what", c[2]));
       counts.appendChild(tile);
     });
   add(page, counts);
@@ -389,9 +399,10 @@ footer { color: var(--muted); font-size: 13px; }
     var list = findings.filter(function (f) { return f.level === level; });
     var sec = el("section");
     var sh = el("div", "sec-head");
-    add(sh, el("h2", null, LEVELS[level].heading + " (" + list.length + ")"), el("span", "sub", LEVELS[level].sub));
+    var pending = notReviewed && !list.length;
+    add(sh, el("h2", null, LEVELS[level].heading + (pending ? "" : " (" + list.length + ")")), el("span", "sub", LEVELS[level].sub));
     var group = el("div", "group");
-    if (!list.length) add(group, el("div", "empty", data.reviewed === false ? "No review results yet." : "Nothing in this group."));
+    if (!list.length) add(group, el("div", "empty", notReviewed ? "No review results yet." : "Nothing in this group."));
     list.forEach(function (f) { group.appendChild(findingNode(f)); });
     add(page, add(sec, sh, group));
   });

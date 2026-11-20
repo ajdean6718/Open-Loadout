@@ -2,8 +2,9 @@
 """Helper for the coderabbit-review skill. Two commands, no installs needed.
 
   python3 review_tools.py checks <base-ref> <head-ref>
-      Runs this repo's house checks on what a pull request changes and prints
-      the result as JSON: long dashes, possible secrets, leftover merge markers.
+      Runs this repo's house checks on the lines a pull request adds and prints
+      the result as JSON: long dashes, passwords, keys, email addresses, and
+      leftover merge markers. It does not judge the content.
 
   python3 review_tools.py report <data.json> <out.html>
       Fills assets/report-template.html with the report data and writes the
@@ -49,7 +50,12 @@ ALLOWED_EMAILS = ("noreply@anthropic.com", "@users.noreply.github.com", "@exampl
 
 
 def git(*args):
-    done = subprocess.run(["git", *args], capture_output=True, text=True)
+    done = subprocess.run(
+        ["git", "-c", "core.quotePath=false", *args],
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",  # a binary file in the diff must not crash the check
+    )
     if done.returncode != 0:
         sys.exit(f"git {' '.join(args)} failed: {done.stderr.strip()}")
     return done.stdout
@@ -57,15 +63,19 @@ def git(*args):
 
 def added_lines(base, head):
     """Yield (file, line_number, text) for every line the pull request adds."""
-    diff = git("diff", "--unified=0", "--no-color", f"{base}...{head}")
-    path, line_no = None, 0
+    diff = git("diff", "--unified=0", "--no-color", "--no-ext-diff", "--no-renames", f"{base}...{head}")
+    path, line_no, in_hunk = None, 0, False
     for raw in diff.splitlines():
-        if raw.startswith("+++ "):
-            path = raw[6:] if raw.startswith("+++ b/") else None
+        if raw.startswith("diff --git "):
+            # A new file starts. Its header lines come before the first "@@".
+            path, in_hunk = None, False
+        elif not in_hunk and raw.startswith("+++ "):
+            path = raw[6:].rstrip("\t") if raw.startswith("+++ b/") else None
         elif raw.startswith("@@"):
             match = re.search(r"\+(\d+)", raw)
             line_no = int(match.group(1)) if match else 0
-        elif raw.startswith("+") and not raw.startswith("+++"):
+            in_hunk = True
+        elif in_hunk and raw.startswith("+"):
             if path and not path.startswith(SKIP_PREFIXES):
                 yield path, line_no, raw[1:]
             line_no += 1
@@ -102,11 +112,11 @@ def run_checks(base, head):
                 "items": dashes,
             },
             {
-                "name": "No secrets or personal details",
+                "name": "No passwords, keys, or email addresses",
                 "passed": not secrets,
-                "detail": "Nothing that looks like a password, key, or email address was added."
+                "detail": "Nothing that looks like a password, key, or email address was added. Other personal details, such as names and phone numbers, are not covered by this check."
                 if not secrets
-                else f"{len(secrets)} line(s) look like they may hold a secret or personal detail.",
+                else f"{len(secrets)} line(s) look like they may hold a password, key, or email address.",
                 "items": secrets,
             },
             {
@@ -125,7 +135,7 @@ def run_checks(base, head):
 def build_report(data_path, out_path):
     data = json.loads(Path(data_path).read_text(encoding="utf-8"))
     pr = data.get("pr", {})
-    title = f"PR {pr.get('number', '')} Review Status".replace("  ", " ")
+    title = f"Open Loadout PR {pr.get('number', '')} Review".replace("  ", " ")
     # "</" is escaped so text inside the data can never close the script tag.
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     page = TEMPLATE.read_text(encoding="utf-8")
