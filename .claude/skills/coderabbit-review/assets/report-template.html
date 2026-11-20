@@ -299,7 +299,7 @@ footer { color: var(--muted); font-size: 13px; }
   if (data.reviewer && data.reviewer.name) bits.push("Reviewer: " + data.reviewer.name);
   if (data.generated) bits.push("Report made " + data.generated);
   meta.textContent = bits.join("  ·  ");
-  if (pr.url) {
+  if (pr.url && /^https:\/\//.test(pr.url)) {
     if (bits.length) meta.appendChild(document.createTextNode("  ·  "));
     var link = el("a", null, "Open on GitHub");
     link.href = pr.url;
