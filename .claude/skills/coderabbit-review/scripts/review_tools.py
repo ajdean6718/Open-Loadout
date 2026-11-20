@@ -50,11 +50,22 @@ ASSIGNMENT = re.compile(
     (?: (?P<quote>["']) (?P<quoted>[^"']{8,}) (?P=quote) | (?P<bare>[^\s"',;]{12,}) )
     """
 )
-# Example text, not a real secret. A value only counts as example text when it
-# uses template marks such as <...> or {...}, or when every word in it is a
-# stock example word, as in "your-password-here". A real password that merely
-# contains one of these words inside it is still checked.
-TEMPLATE_MARKS = ("<", ">", "{", "}", "$", "...")
+# Example text, not a real secret. A value only counts as example text when the
+# whole value is a fill-in form such as <your token>, {{password}}, ${DB_PASSWORD}
+# or $DB_PASSWORD, or when every word in it is a stock example word, as in
+# "your-password-here". A real password that merely contains a dollar sign, a
+# brace, an angle bracket, or one of these words is still checked.
+TEMPLATE_FORMS = re.compile(
+    r"""(?x) ^ (?:
+        <[^<>]+>                      # <your token>
+      | \{\{[^{}]+\}\} | \{[^{}]+\}   # {{password}} or {password}
+      | \$\{[^{}]+\}                 # ${DB_PASSWORD}
+      | \$\([^()]+\)                 # $(command)
+      | \$[A-Za-z_][A-Za-z0-9_]*     # $DB_PASSWORD
+      | %[A-Za-z_][A-Za-z0-9_]*%      # %DB_PASSWORD%
+      | \.{3,}                       # ...
+    ) $"""
+)
 PLACEHOLDER_WORDS = {
     "your", "my", "the", "a", "an", "example", "sample", "placeholder", "dummy", "fake", "test",
     "password", "passwd", "secret", "token", "key", "api", "apikey", "value", "here", "goes",
@@ -63,7 +74,7 @@ PLACEHOLDER_WORDS = {
 
 
 def is_placeholder(value):
-    if any(mark in value for mark in TEMPLATE_MARKS):
+    if TEMPLATE_FORMS.match(value.strip()):
         return True
     words = [w for w in re.split(r"[\s_.\-]+", value.lower()) if w]
     return bool(words) and all(w in PLACEHOLDER_WORDS or set(w) <= {"x"} or set(w) <= {"*"} for w in words)

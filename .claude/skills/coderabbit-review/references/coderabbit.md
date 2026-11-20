@@ -42,7 +42,7 @@ Do not post a review command to find out whether CodeRabbit is installed. If it 
 Work down this list and stop at the first that fits.
 
 1. **Too soon.** A review takes a few minutes. Look for a check run named `CodeRabbit` on the latest commit. "Review in progress" means wait.
-2. **This pull request was open before CodeRabbit was connected.** If CodeRabbit has posted on a newer pull request, ask for a review here with the command in section 4.
+2. **This pull request was opened before CodeRabbit was connected.** Only if CodeRabbit has reviewed a newer pull request in the last day or so, ask for a review here with the command in section 4. It answers a command within about a minute. If it does not answer, do not ask again. Ask Anthony to check its access, as in item 7. If its last review is older than that, access is uncertain, so ask Anthony first.
 3. **Paused.** The settings file tells CodeRabbit never to pause by itself. Without that setting it pauses after 5 reviewed pushes, which can still happen on a pull request whose branch does not have the settings file yet. The check run says "Review paused". Resume with the command in section 4.
 4. **Rate limited.** The check run says "Review rate limited" and CodeRabbit posts a comment. Tell Anthony it will catch up within the hour, and ask for a review again later.
 5. **Skipped.** The check run says "Review skipped", "No files to review", or "Too many files to review". The reason is in CodeRabbit's walkthrough comment. Common causes: the pull request is a draft, or it only touches files excluded in `.coderabbit.yaml`.
