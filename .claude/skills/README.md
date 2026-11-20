@@ -12,3 +12,11 @@ Build skills for working on this repo. Copied as is from Anthropic's public repo
 | code-review | [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) `engineering/skills/code-review` (0e0fcac) |
 
 These skills are licensed by Anthropic under Apache 2.0 (see each source repository), not under this repo's MIT license.
+
+## Our own skills
+
+Written for this repo. These can be edited, and they follow the repo rules (plain language, hyphens only).
+
+| Skill | What it is for |
+|---|---|
+| coderabbit-review | Checks what CodeRabbit said about a pull request, reports it in plain English, and applies only the fixes Anthony approves. |
