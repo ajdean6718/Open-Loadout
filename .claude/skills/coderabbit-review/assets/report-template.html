@@ -76,6 +76,7 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
 p { margin: 0; }
 a { color: var(--accent); }
 a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .label {
   font-size: 12px;
   font-weight: 600;
@@ -283,8 +284,12 @@ footer { color: var(--muted); font-size: 13px; }
     waiting: "Waiting for your decision",
     approved: "You approved this fix",
     rejected: "You chose to leave it",
-    fixed: "Fixed"
+    fixed: "Fixed",
+    closed: "Closed on GitHub"
   };
+  function levelOf(f) { return LEVELS[f.level] ? f.level : "critical"; } /* an unknown level is shown at the top, never hidden */
+  function decisionOf(f) { return DECISIONS[f.decision] ? f.decision : "waiting"; }
+  function isOpen(f) { var d = decisionOf(f); return d === "waiting" || d === "approved"; }
   var MARKS = { ready: "✓", action: "!", blocked: "×", waiting: "…" };
 
   var pr = data.pr || {};
@@ -302,7 +307,7 @@ footer { color: var(--muted); font-size: 13px; }
   }
   if (data.generated) bits.push("Report made " + data.generated);
   meta.textContent = bits.join("  ·  ");
-  if (pr.url && /^https:\/\//.test(pr.url)) {
+  if (pr.url && /^https:\/\/github\.com\//.test(pr.url)) {
     if (bits.length) meta.appendChild(document.createTextNode("  ·  "));
     var link = el("a", null, "Open on GitHub");
     link.href = pr.url;
@@ -319,7 +324,9 @@ footer { color: var(--muted); font-size: 13px; }
   verdict.dataset.state = v.state || "waiting";
   var vt = el("div", "text");
   add(vt, el("h2", null, v.headline || ""), v.detail ? el("p", null, v.detail) : null);
-  add(verdict, el("div", "mark", MARKS[v.state] || MARKS.waiting), vt);
+  var mark = el("div", "mark", MARKS[v.state] || MARKS.waiting);
+  mark.setAttribute("aria-hidden", "true");
+  add(verdict, mark, vt);
   add(page, verdict);
 
   /* Progress */
@@ -329,23 +336,27 @@ footer { color: var(--muted); font-size: 13px; }
     var ol = el("ol", "steps");
     data.steps.forEach(function (s) {
       var li = el("li");
-      li.dataset.state = s.state || "todo";
-      add(li, el("div", "bar"), el("div", "name", s.label), s.note ? el("div", "note", s.note) : null);
+      var state = s.state || "todo";
+      li.dataset.state = state;
+      if (state === "current") li.setAttribute("aria-current", "step");
+      var name = el("div", "name", s.label);
+      name.appendChild(el("span", "sr", state === "done" ? " (done)" : state === "current" ? " (current step)" : " (not started)"));
+      add(li, el("div", "bar"), name, s.note ? el("div", "note", s.note) : null);
       ol.appendChild(li);
     });
     add(page, add(sec, ol));
   }
 
   /* Counts */
-  var notReviewed = data.reviewed === false;
+  var notReviewed = data.reviewed !== true;
   function countOf(level) {
-    var n = findings.filter(function (f) { return f.level === level; }).length;
+    var n = findings.filter(function (f) { return levelOf(f) === level && isOpen(f); }).length;
     /* Before a review exists, a zero would read as an all-clear. Show "not yet" unless a house check found something. */
     return notReviewed && n === 0 ? null : n;
   }
   var counts = el("div", "counts");
-  [["critical", countOf("critical"), "Must fix"], ["warning", countOf("warning"), "Worth a look"],
-   ["suggestion", countOf("suggestion"), "Small suggestions"], ["pass", passed.length, "Checks passed"]]
+  [["critical", countOf("critical"), "Must fix, still open"], ["warning", countOf("warning"), "Worth a look, still open"],
+   ["suggestion", countOf("suggestion"), "Small suggestions, still open"], ["pass", passed.length, "Checks passed"]]
     .forEach(function (c) {
       var tile = el("div", "count");
       tile.dataset.level = c[0];
@@ -358,7 +369,7 @@ footer { color: var(--muted); font-size: 13px; }
   add(page, counts);
 
   /* How to decide */
-  var waiting = findings.filter(function (f) { return (f.decision || "waiting") === "waiting"; });
+  var waiting = findings.filter(function (f) { return decisionOf(f) === "waiting"; });
   if (waiting.length) {
     var how = el("div", "how");
     how.appendChild(el("strong", null, "Your call. "));
@@ -372,11 +383,11 @@ footer { color: var(--muted); font-size: 13px; }
   function findingNode(f) {
     var node = el("article", "finding");
     var top = el("div", "top");
-    var lvl = el("span", "chip", (LEVELS[f.level] || LEVELS.suggestion).chip);
-    lvl.dataset.level = f.level;
-    var dec = el("span", "chip", DECISIONS[f.decision || "waiting"] || DECISIONS.waiting);
-    dec.dataset.decision = f.decision || "waiting";
-    add(top, el("span", "chip id", f.id), lvl, dec);
+    var lvl = el("span", "chip", LEVELS[levelOf(f)].chip);
+    lvl.dataset.level = levelOf(f);
+    var dec = el("span", "chip", DECISIONS[decisionOf(f)]);
+    dec.dataset.decision = decisionOf(f);
+    add(top, el("span", "chip id", f.id || "?"), lvl, dec);
     add(node, top, el("h3", null, f.title));
     if (f.meaning) add(node, el("p", "meaning", f.meaning));
     if (f.where || f.source) {
@@ -396,11 +407,13 @@ footer { color: var(--muted); font-size: 13px; }
     return node;
   }
   ["critical", "warning", "suggestion"].forEach(function (level) {
-    var list = findings.filter(function (f) { return f.level === level; });
+    var list = findings.filter(function (f) { return levelOf(f) === level; });
+    var openCount = list.filter(isOpen).length;
     var sec = el("section");
     var sh = el("div", "sec-head");
     var pending = notReviewed && !list.length;
-    add(sh, el("h2", null, LEVELS[level].heading + (pending ? "" : " (" + list.length + ")")), el("span", "sub", LEVELS[level].sub));
+    var tally = pending ? "" : " (" + openCount + " open" + (list.length > openCount ? ", " + (list.length - openCount) + " dealt with" : "") + ")";
+    add(sh, el("h2", null, LEVELS[level].heading + tally), el("span", "sub", LEVELS[level].sub));
     var group = el("div", "group");
     if (!list.length) add(group, el("div", "empty", notReviewed ? "No review results yet." : "Nothing in this group."));
     list.forEach(function (f) { group.appendChild(findingNode(f)); });
@@ -420,7 +433,9 @@ footer { color: var(--muted); font-size: 13px; }
       var body = el("div", "body");
       add(body, el("div", "name", p.label),
         el("div", "detail", [p.detail, p.source ? "Checked by " + p.source : null].filter(Boolean).join("  ·  ")));
-      ul.appendChild(add(li, el("span", "tick", "✓"), body));
+      var tick = el("span", "tick", "✓");
+      tick.setAttribute("aria-hidden", "true");
+      ul.appendChild(add(li, tick, body));
     });
     pgroup.appendChild(ul);
   }

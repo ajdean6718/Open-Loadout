@@ -19,12 +19,15 @@ reviews:
     auto_incremental_review: true
 
   # Never approve or request changes on its own. Comments only.
+  # The last line also blocks the commands that would close every review comment at once.
   auto_approvals:
     enabled: false
     approve_on_skipped_review: false
+    allow_author_approval: false
 
-  # Never change files. Every "fix it for me" feature is switched off.
-  # Fixes are made by Claude, and only the ones Anthony approves.
+  # Never change files. Every "fix it for me" feature that has a switch is switched off.
+  # Two have no switch and can only be started by a comment or a checkbox. The review skill
+  # forbids both. Fixes are made by Claude, and only the ones Anthony approves.
   finishing_touches:
     unit_tests:
       enabled: false

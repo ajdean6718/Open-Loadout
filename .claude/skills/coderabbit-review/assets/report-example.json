@@ -12,9 +12,9 @@
   },
   "reviewed": true,
   "verdict": {
-    "state": "action",
-    "headline": "3 things need your decision before this is ready",
-    "detail": "CodeRabbit finished its review. One real problem, two smaller points. Nothing has been changed yet."
+    "state": "blocked",
+    "headline": "1 problem needs your decision before this is ready",
+    "detail": "CodeRabbit finished its review and found three things. You have already decided two of them. One real problem is still waiting. Nothing has been changed yet."
   },
   "steps": [
     {
@@ -30,7 +30,7 @@
     {
       "label": "Your decisions",
       "state": "current",
-      "note": "3 waiting"
+      "note": "1 waiting"
     },
     {
       "label": "Fixes applied",
@@ -93,8 +93,8 @@
       "source": "Claude"
     },
     {
-      "label": "No conflicts with main",
-      "detail": "GitHub says this can merge cleanly.",
+      "label": "Fits with the main version",
+      "detail": "GitHub says this can be merged without clashing with the main version of the project.",
       "source": "GitHub"
     }
   ],

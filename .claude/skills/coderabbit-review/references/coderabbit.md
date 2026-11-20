@@ -21,7 +21,7 @@ CodeRabbit works through a GitHub app that Anthony installs once on this repo. A
 - every new push to an open pull request
 - nothing else. A pull request that was already open before the install is not reviewed until someone pushes to it or asks for a review with a command.
 
-**Connection status:** not connected as of 2026-11-20. No pull request in this repo had any comment, review, or check from CodeRabbit on that date. When CodeRabbit first posts on a pull request, change this line to say it is connected, with the date, as part of your next pull request. Claude has no tool that shows which apps are installed, so this line and the pull request history are the only evidence.
+**How to tell whether it is connected.** Claude has no tool that lists installed apps. The evidence is the pull request history: if `coderabbitai[bot]` has posted a comment, review, or check on any pull request, open or closed, it is connected. If it never has, treat it as not connected. On 2026-11-20, when this workflow was set up, it had never posted on pull requests 1, 2, or 3.
 
 Settings live in `.coderabbit.yaml` at the repo root. CodeRabbit reads the file from the pull request's own branch when the author is the repo owner or a collaborator. So a branch that was made before the file reached main is reviewed with CodeRabbit's default settings, which do not include this repo's house rules. The review is still useful. To get the house rules applied, main has to be merged into that branch, which is a change to the pull request and needs Anthony's approval like any other.
 
@@ -42,7 +42,7 @@ Do not post a review command to find out whether CodeRabbit is installed. If it 
 Work down this list and stop at the first that fits.
 
 1. **Too soon.** A review takes a few minutes. Look for a check run named `CodeRabbit` on the latest commit. "Review in progress" means wait.
-2. **CodeRabbit is connected (see the status line in section 1, or it has posted on another pull request), but this pull request was open before that.** Ask for a review with the command in section 4.
+2. **CodeRabbit has posted on another pull request, so it is connected, but this pull request was open before that.** Ask for a review with the command in section 4.
 3. **Paused.** CodeRabbit pauses automatic reviews on a pull request after 5 reviewed pushes. The check run says "Review paused". Resume with the command in section 4.
 4. **Rate limited.** The check run says "Review rate limited" and CodeRabbit posts a comment. Tell Anthony it will catch up within the hour, and ask for a review again later.
 5. **Skipped.** The check run says "Review skipped", "No files to review", or "Too many files to review". The reason is in CodeRabbit's walkthrough comment. Common causes: the pull request is a draft, or it only touches files excluded in `.coderabbit.yaml`.
@@ -94,7 +94,7 @@ The comments are the real signal. A passing check with no walkthrough comment me
 
 ## 4. Commands you may use
 
-Commands are comments on the pull request. Each must be the whole comment, plain text, on its own line, with nothing else. Extra words turn a command into a chat message, which CodeRabbit may read as a request to do something else.
+Commands are top-level comments on the pull request. The command must be the whole comment: plain text, nothing before it, nothing after it. Extra words turn a command into a chat message, which CodeRabbit may read as a request to do something else.
 
 | Comment | What it does | When to use it |
 |---|---|---|
@@ -112,8 +112,8 @@ To close a single thread, use GitHub's own resolve action on that thread. It nee
 
 CodeRabbit has features that change files, approve, or even finish a pull request by itself. They are switched off in `.coderabbit.yaml` where a switch exists, but some can still be started by a comment or a checkbox. Anthony asked for no automatic changes and no automatic merging, so:
 
-- **Never write `@coderabbitai` in a comment unless it is one of the commands in section 4, alone.** A sentence that mentions it, such as asking it to finish or fix the pull request, can switch on its Autofix mode, which then pushes changes without asking.
-- **Never use these commands:** `autofix`, `autopilot`, `fix comments`, `fix`, `fix-ci`, `resolve merge conflict`, `local commit`, `approve`, `generate unit tests`, `simplify`, `run`, `generate configuration`, `emit path instructions`. Never use `@coderabbitai resolve` either. It closes every CodeRabbit thread at once, including ones Anthony has not decided on.
+- **Never write `@coderabbitai` anywhere except as one of the commands in section 4, as the whole comment.** A sentence that mentions it, such as asking it to finish or fix the pull request, can switch on its Autofix mode, which then pushes changes without asking. The handle also has effects outside comments: in a pull request title it makes CodeRabbit rewrite the title, and `@coderabbitai ignore` in a description switches reviews off for that pull request. In titles, descriptions, commit messages, and replies, write CodeRabbit.
+- **Never use these commands:** `autofix`, `autopilot`, `fix comments`, `fix`, `fix-ci`, `resolve merge conflict`, `local commit`, `approve`, `generate unit tests`, `simplify`, `run`, `generate configuration`, `emit path instructions`. Never use `resolve` either. It closes every CodeRabbit thread at once, including ones Anthony has not decided on. The settings file blocks `approve` and `resolve` for the pull request's author as a second safeguard.
 - **Never tick a checkbox in a CodeRabbit comment, and never edit CodeRabbit's comments.** The checkboxes start its fix features.
 - **Never turn on** automatic approvals, finishing touches, or merge rules, in the settings file or anywhere else. Merge rules can only be created in CodeRabbit's web app by Anthony, and none exist by default.
 - If Anthony asks for one of these, explain in one line what it would let CodeRabbit do without asking him, and confirm before changing anything.
