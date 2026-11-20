@@ -1014,7 +1014,7 @@ Folder: `loadouts/building/`. Simple websites, small apps, and automations for p
 
 ### Teams
 
-- **Build something new:** Product Planner > Builder > Tester > Fixer > Launch Checker.
+- **Build something new:** Product Planner > Builder > Tester > Fixer > Tester > Launch Checker.
 - **Fix something broken:** Fixer > Tester.
 - **Automate a task:** Product Planner > Builder > Tester.
 
