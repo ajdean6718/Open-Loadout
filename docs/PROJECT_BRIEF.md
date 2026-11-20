@@ -1,5 +1,5 @@
 Open Loadout: project brief
-Last updated: 2026-11-19. Owner: Anthony Dean. Repo: ajdean6718/Open-Loadout.
+Last updated: 2026-11-20. Owner: Anthony Dean. Repo: ajdean6718/Open-Loadout.
 Status labels used below:
 
 * DECIDED: Anthony has decided this.
@@ -11,6 +11,7 @@ Status labels used below:
 Open Loadout is an open-source repo that makes any major AI work much better for everyday and intermediate users, with almost no setup. It is the everyday-user counterpart to heavy developer kits like Everything Claude Code (ECC), which are built for serious AI developers. Open Loadout is for normal people who just want better results and do not want to learn prompting or tech.
 It must work, to the extent each tool allows, with any major LLM (Claude, ChatGPT, Gemini, and others) in any place people use them: the web app, the desktop app, the mobile app, and the command line. It must be fully customizable by whoever downloads it. (DECIDED)
 The name "Open Loadout" means: open source, and you equip ("load out") your AI with the right gear. (DECIDED)
+Open Loadout is an installable kit (a plugin and repo). It is not a collection of prompts. The heart of it is a large library of skills and agents. The goal is that about 95 percent of regular AI users could use it as their only kit. It should also help with heavy work such as coding, without trying to beat kits made only for that. (DECIDED 2026-11-20)
 2. The core promise
 The user does not learn how to use AI better. The system does that for them and tailors it to them. Two sides of one idea:
 
@@ -33,7 +34,7 @@ Everything in this repo should serve that promise. If a feature makes the user's
 Intended flow of a request:
 User message -> Prompt brain (Stage 1 clean up, Stage 2 clarify) -> Router -> Skill library and/or Agents and teams -> Reviewer -> Explainer -> Result to user.
 Running underneath every step: Memory and the Usage saver. The Onboarding team builds personal agents that sit beside the base agents.
-4.1 Prompt brain (FIRST THING TO BUILD, DECIDED)
+4.1 Prompt brain (DECIDED that it is needed. No longer built first, see section 7)
 Anthony's reasoning: most people get bad outputs because they give bad inputs (overexplaining, underexplaining, contradicting, and more). The brain makes sure that no matter how well someone prompts, the AI treats it like a prompt engineer wrote it.
 Stage 1: clean up. Takes the user's prompt and improves it before the AI works on it (this is what is commonly called prompt rewriting, enhancement, or optimization). It must preserve the user's real intent, fix contradictions and vagueness, and never invent requirements. Keep it light.
 Stage 2: clarify. This is the harder and more important stage. Even after Stage 1, a prompt usually does not contain enough for the AI to do real work well. So the AI follows a framework to (1) truly understand what the user wants, (2) make sure that is clarified in a form it can use, and (3) make sure nothing is missing. It asks questions when needed. The AI, not the user, decides whether the prompt is good enough to work from. This applies to real work, not simple lookups or quick answers.
@@ -57,6 +58,10 @@ A large skill library that makes the user's AI better at actual work. Nobody wan
 * When an agent reads a skill and gets stuck or needs more help, the skill gives an exact pinpoint to which skill and which section to go to for what it needs.
 * The goal is that skills make agents machines at the work, not just good at it.
 * The roadmap format and index structure are OPEN and need careful design.
+* Size (DECIDED 2026-11-20): about 300 skills, grouped into about 20 sections with about 5 subsections each. The AI sees only the section list up front and opens skills one at a time.
+* One section equals one loadout (DECIDED 2026-11-20). Each loadout folder holds that section's skills, agents, and teams.
+* Quality bar (ACCEPTED): a skill only earns its place if it changes the result in a before-and-after test. It covers what the AI gets wrong by default.
+* The full draft list of sections, skills, agents, and teams is in docs/LIBRARY_MAP.md. The list itself is PROPOSED until Anthony approves it.
 
 4.4 Agents and teams (DECIDED)
 Two kinds of profile:
@@ -69,6 +74,7 @@ Rules Anthony set:
 
 * Cover all major categories of work (examples he gave: design, coding team, data team, marketing; he wants more than those).
 * Maximum of 10 agents per category.
+* About 100 agents in total (DECIDED 2026-11-20). Skills hold the knowledge, so hundreds are needed. Agents are roles in a workflow, so far fewer are needed.
 * Cover all the major stuff in each category while keeping each agent's job narrow.
 * Base agents are generally not something users need to customize.
 
@@ -77,8 +83,8 @@ Suggestions to build on (PROPOSED):
 * Define agents by step in the work, not by job title.
 * Every profile states what it handles and what it explicitly does not do, so neighbors do not overlap and routing stays clean.
 * Keep each agent's routing description short, since routers choose by description.
-* Starter category list (PROPOSED): research, writing, editing, planning and projects, coding, data and analysis, design, marketing and social content, sales, business operations, finance, learning and study, career, life admin. Prove the structure with two or three categories first.
-* Keep base agents and user agents in separate locations (for example agents/base/<category>/ and agents/yours/).
+* Category list (PROPOSED): the 21 sections in docs/LIBRARY_MAP.md. Writing and editing are one section. Prove the structure with one section first: Writing and editing (DECIDED 2026-11-20).
+* Keep base agents and user agents in separate locations. Base agents live inside their loadout folder. The location for user agents is OPEN.
 * Write profiles as portable plain markdown. Adapters turn them into real subagent files where the tool supports that. In chat apps without subagents, the model plays the roles in sequence.
 
 Universal agents that apply across categories (ACCEPTED): a Reviewer (checks the work, ideally with fresh eyes that did not write it) and an Explainer (see 4.7). Every team ends with these two steps.
@@ -127,21 +133,28 @@ The README should state what users get at each tier. Anthony has acknowledged th
 * A small before-and-after test set to prove outputs actually improve, especially to prove Stage 2 helps instead of annoying people.
 
 7. Build order
-DECIDED: the first thing to build is the starting brain (Stage 1 and Stage 2, section 4.1).
-PROPOSED order after that (a recommendation; Anthony wants to keep the full vision and will decide):
+DECIDED 2026-11-20: the skill library and the agents are built first. This replaces the earlier decision to build the prompt brain first. The prompt brain is still needed and comes later.
+DECIDED 2026-11-20, the order of work:
 
-1. Prompt brain plus Explainer and Reviewer, as a single paste-in file that works in any chat.
-2. Skill library with its roadmap.
-3. Base agents and teams for two or three categories first.
-4. Memory, the feedback loop, and the Onboarding team.
-5. Usage saver, doctor command, and update path.
+1. Agree the full map by name: every section, skill, agent, and team (docs/LIBRARY_MAP.md).
+2. Design the file format for skills, agents, teams, and the roadmap.
+3. Build one section fully and test it with before-and-after examples. The first section is Writing and editing.
+4. Fix the pattern based on what the tests show.
+5. Fill in the remaining sections using the proven pattern.
+
+PROPOSED order after that (Anthony will decide):
+
+1. Prompt brain. The shared Reviewer and Explainer are built with the first section, since every team ends with them.
+2. Memory, the feedback loop, and the Onboarding team.
+3. Usage saver, doctor command, and update path.
 
 Concern to keep in view: scope is large and the project promises simplicity to users while being complex underneath. Each layer must be independently useful, and the always-on part must stay tiny.
 8. Current repo state
 
 * Repo: ajdean6718/Open-Loadout, MIT license for the project.
-* Folders: loadouts/ (the product, one folder per loadout), adapters/ (thin per-tool files for claude, chatgpt, gemini, cli), templates/ (loadout template), docs/, tests/, .claude/skills/.
-* templates/loadout-template/loadout.md is the loadout skeleton.
+* Folders: loadouts/ (the product, one folder per loadout, each holding one section's skills, agents, and teams), adapters/ (thin per-tool files for claude, chatgpt, gemini, cli), templates/ (loadout template), docs/, tests/, .claude/skills/.
+* templates/loadout-template/loadout.md is the old loadout skeleton. It will be replaced when the file formats are designed.
+* docs/LIBRARY_MAP.md is the draft map of every section, skill, agent, and team. No skills or agents are built yet.
 * Installed build skills in .claude/skills/ (Apache 2.0, from Anthropic, copied unedited): skill-creator, doc-coauthoring, product-brainstorming, write-spec, architecture, code-review. They may contain em dashes; leave them unedited.
 * CLAUDE.md contains the core rules, including: never commit or push directly to main; always work on a branch and open a pull request.
 * Branch protection on GitHub is not enabled yet. Revisit when the repo goes public.
@@ -173,15 +186,18 @@ Concern to keep in view: scope is large and the project promises simplicity to u
 * Exact Stage 2 framework and the rule that gates when to ask questions.
 * How personalization works in detail (Anthony will bring ideas later).
 * Which existing memory approach to build on.
-* Roadmap and index format for the skill library, including how pinpoint references to a skill and section are written.
-* Final category list and the agent roster for each category.
+* File format for skills, agents, and teams, and the roadmap and index format, including how pinpoint references to a skill and section are written.
+* Approval of the section list and the skill and agent names in docs/LIBRARY_MAP.md.
+* Where user-made skills and agents live, separate from the base ones.
+* How the kit is installed in each tool.
 * Usage saver design.
 * How updates work for users on each tier.
 * Whether to adopt the tier model, the first-win demo, memory commands, and the doctor command.
 
 12. Glossary
 
-* Loadout: a ready-made bundle of instructions, skills, and workflows for a type of task.
+* Loadout: one section of the kit, such as Writing or Money. A ready-made bundle of skills, agents, and teams for one area of work or life.
+* Section: the same thing as a loadout.
 * Prompt brain: the two-stage system that cleans up and clarifies what the user asks.
 * Router: decides which skills and agents a job needs.
 * Skill: a reusable instruction set that makes the AI better at a type of work.

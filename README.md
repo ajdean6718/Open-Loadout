@@ -1,6 +1,6 @@
 # Open Loadout
 
-> **Status:** v1 is in progress. No loadouts are ready yet.
+> **Status:** v1 is in progress. No loadouts are ready yet. The planned contents are listed in [docs/LIBRARY_MAP.md](docs/LIBRARY_MAP.md).
 
 Open Loadout is a free, open-source kit that gears up any AI with better instructions, skills, and workflows. It works with Claude, ChatGPT, Gemini, and others, in any app: desktop, web, or command line. Setup takes less than 5 minutes.
 
@@ -10,27 +10,31 @@ People who use AI for everyday work and want better results without learning pro
 
 ## How it works
 
-A **loadout** is a ready-made bundle for one type of task, such as writing, research, or planning. Each loadout is a plain text file with:
+A **loadout** is a ready-made bundle for one area of work or life, such as writing, research, or money. Each loadout holds:
 
-- instructions the AI follows
-- example prompts to get started
-- simple settings you can change to make it your own
+- **skills:** how-to guides the AI reads when it does a type of task
+- **agents:** specialist workers that each do one step of the work
+- **teams:** agents in a set order for bigger jobs
 
-Pick a loadout, copy it into your AI tool (or use the small adapter file for your tool), and start working.
+You do not pick any of these yourself. The AI opens only what the task needs. Everything is plain text, so you can change any part to make it your own.
+
+How you install it in each AI tool is still being designed.
 
 ## Planned structure
 
 ```
-loadouts/    one folder per loadout
+loadouts/    one folder per loadout, holding its skills, agents, and teams
 adapters/    small files that load a loadout into Claude, ChatGPT, Gemini, or a CLI
 templates/   a template for making new loadouts
-docs/        guides for users
+docs/        guides for users, plus the project brief and the library map
 tests/       before and after examples for each loadout
 ```
 
 ## Contributing
 
-1. Copy `templates/loadout-template/` into `loadouts/` and fill it in.
+The file formats are still being designed, so the steps below will change.
+
+1. Check [docs/LIBRARY_MAP.md](docs/LIBRARY_MAP.md) to see where your idea fits.
 2. Add a before and after example in `tests/`.
 3. Open a pull request. Keep it short, plain, and model-neutral.
 
