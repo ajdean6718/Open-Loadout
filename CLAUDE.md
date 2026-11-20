@@ -1,5 +1,12 @@
 # Open Loadout
 
+## Project brief
+
+- Read `docs/PROJECT_BRIEF.md` at the start of every session.
+- It is the source of truth for the vision, decisions, and build rules.
+- If a request conflicts with it, flag the conflict to Anthony instead of silently choosing.
+- When a decision changes, update the brief through a pull request.
+
 ## Purpose
 
 Open Loadout is an open-source kit that gears up any AI (Claude, ChatGPT, Gemini, and others) with almost no setup. A loadout is a ready-made bundle of instructions, skills, and workflows for one type of task, such as writing, research, or planning. It works in any app: desktop, web, or CLI. Anyone who downloads it can customize it.
