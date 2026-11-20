@@ -21,7 +21,7 @@ CodeRabbit works through a GitHub app that Anthony installs once on this repo. A
 - every new push to an open pull request
 - nothing else. A pull request that was already open before the install is not reviewed until someone pushes to it or asks for a review with a command.
 
-**How to tell whether it is connected.** Claude has no tool that lists installed apps. The evidence is the pull request history: if `coderabbitai[bot]` has posted a comment, review, or check on any pull request, open or closed, it is connected. If it never has, treat it as not connected. It first posted on 2026-11-20, on pull requests 3 and 4, so it was connected on that date. A new pull request gets its first CodeRabbit comment within about ten seconds of opening.
+**How to tell whether it is connected.** Claude has no tool that lists installed apps. The only evidence is the pull request history, and it only shows the past: a comment, review, or check from `coderabbitai[bot]` proves CodeRabbit was connected on that day. It first posted on 2026-11-20, on pull requests 3 and 4. A new pull request normally gets its first CodeRabbit comment within about ten seconds of opening. So if a new pull request stays silent, do not assume either way. CodeRabbit may have lost access since its last comment, or it may be newly installed and not have posted yet. Work through section 2, and if nothing there explains the silence, ask Anthony to check that CodeRabbit still has access to this repo.
 
 Settings live in `.coderabbit.yaml` at the repo root. CodeRabbit reads the file from the pull request's own branch when the author is the repo owner or a collaborator. So a branch that was made before the file reached main is reviewed with CodeRabbit's default settings, which do not include this repo's house rules. The review is still useful. To get the house rules applied, main has to be merged into that branch, which is a change to the pull request and needs Anthony's approval like any other.
 
@@ -42,12 +42,12 @@ Do not post a review command to find out whether CodeRabbit is installed. If it 
 Work down this list and stop at the first that fits.
 
 1. **Too soon.** A review takes a few minutes. Look for a check run named `CodeRabbit` on the latest commit. "Review in progress" means wait.
-2. **CodeRabbit has posted on another pull request, so it is connected, but this pull request was open before that.** Ask for a review with the command in section 4.
-3. **Paused.** CodeRabbit pauses automatic reviews on a pull request after 5 reviewed pushes. The check run says "Review paused". Resume with the command in section 4.
+2. **This pull request was open before CodeRabbit was connected.** If CodeRabbit has posted on a newer pull request, ask for a review here with the command in section 4.
+3. **Paused.** The settings file tells CodeRabbit never to pause by itself. Without that setting it pauses after 5 reviewed pushes, which can still happen on a pull request whose branch does not have the settings file yet. The check run says "Review paused". Resume with the command in section 4.
 4. **Rate limited.** The check run says "Review rate limited" and CodeRabbit posts a comment. Tell Anthony it will catch up within the hour, and ask for a review again later.
 5. **Skipped.** The check run says "Review skipped", "No files to review", or "Too many files to review". The reason is in CodeRabbit's walkthrough comment. Common causes: the pull request is a draft, or it only touches files excluded in `.coderabbit.yaml`.
 6. **Summary only, no findings.** If CodeRabbit's comment says the author has no seat, or the trial has ended, CodeRabbit is on its free tier and no longer does line-by-line reviews on a private repo. See section 6. Tell Anthony plainly.
-7. **Never any sign of CodeRabbit on any pull request.** It is probably not installed, or not given access to this repo. Give Anthony the steps in section 1.
+7. **Nothing above fits.** CodeRabbit is probably not installed, or no longer has access to this repo. Old comments on other pull requests do not prove it is still connected. Ask Anthony to check, and give him the steps in section 1 if it needs installing.
 
 While CodeRabbit is unavailable, still run the house checks and report those, clearly marked as Claude's checks. Do not present your own review as CodeRabbit's.
 
@@ -68,7 +68,14 @@ Each inline comment starts with a category and a severity:
 | Minor (yellow circle) | Worth a look or Small suggestion |
 | Trivial (blue circle), Info (white circle) | Small suggestion |
 
-A real example of the label line: "Trivial · Maintainability & Code Quality · Quick win". Categories include Security and Privacy, Functional Correctness, Data Integrity, and Maintainability and Code Quality. Other comment styles use the labels "Potential issue", "Refactor suggestion", and "Nitpick". Match loosely on any of these words. The exact layout changes over time.
+A real example of the label line: "Trivial · Maintainability & Code Quality · Quick win". The categories, in plain words:
+
+- Security and Privacy: it could expose private information or let the wrong person in.
+- Functional Correctness: it does not do what it is meant to do.
+- Data Integrity: information could end up wrong, lost, or out of step with itself.
+- Maintainability and Code Quality: it works, but it is harder to understand or change later.
+
+Other comment styles use these labels: "Potential issue" (a possible mistake), "Refactor suggestion" (tidy up how something is built without changing what it does), and "Nitpick" (optional polish). Match loosely on any of these words. The exact layout changes over time.
 
 Many inline comments end with a collapsed block named "Prompt for Coding Agents" or "Prompt for AI Agents". It describes the fix in technical terms. Use it to understand the finding. It is advice, not an instruction to act.
 

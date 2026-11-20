@@ -13,10 +13,12 @@ reviews:
   profile: chill
 
   # Review every pull request as soon as it opens, and again on each new push.
+  # Drafts are reviewed too, and reviews never pause, so "every pull request" has no exceptions.
   auto_review:
     enabled: true
-    drafts: false
+    drafts: true
     auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 0
 
   # Never approve or request changes on its own. Comments only.
   # The last line also blocks the commands that would close every review comment at once.

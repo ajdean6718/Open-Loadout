@@ -47,10 +47,26 @@ ASSIGNMENT = re.compile(
     r"""(?ix)
     ["']? [A-Za-z0-9_.-]* (?:api[_-]?key|secret|passwd|password|token) [A-Za-z0-9_-]* ["']?
     \s* [:=] \s*
-    (?: (?P<quote>["']) (?P<quoted>[^"'\s]{8,}) (?P=quote) | (?P<bare>[^\s"',;]{12,}) )
+    (?: (?P<quote>["']) (?P<quoted>[^"']{8,}) (?P=quote) | (?P<bare>[^\s"',;]{12,}) )
     """
 )
-PLACEHOLDER_HINTS = ("your", "example", "placeholder", "changeme", "redacted", "xxxx", "here", "<", "...", "$", "{")
+# Example text, not a real secret. A value only counts as example text when it
+# uses template marks such as <...> or {...}, or when every word in it is a
+# stock example word, as in "your-password-here". A real password that merely
+# contains one of these words inside it is still checked.
+TEMPLATE_MARKS = ("<", ">", "{", "}", "$", "...")
+PLACEHOLDER_WORDS = {
+    "your", "my", "the", "a", "an", "example", "sample", "placeholder", "dummy", "fake", "test",
+    "password", "passwd", "secret", "token", "key", "api", "apikey", "value", "here", "goes",
+    "change", "me", "changeme", "replace", "this", "redacted", "todo", "tbd", "none", "null",
+}
+
+
+def is_placeholder(value):
+    if any(mark in value for mark in TEMPLATE_MARKS):
+        return True
+    words = [w for w in re.split(r"[\s_.\-]+", value.lower()) if w]
+    return bool(words) and all(w in PLACEHOLDER_WORDS or set(w) <= {"x"} or set(w) <= {"*"} for w in words)
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 ALLOWED_EMAIL_ENDINGS = ("noreply@anthropic.com", "@users.noreply.github.com", "@example.com", "@example.org")
 NOT_AN_EMAIL = re.compile(r"(?i)^git@|\.(png|jpe?g|gif|svg|webp)$")
@@ -112,8 +128,7 @@ def secret_kinds(text):
     kinds = [label for label, pattern in TOKEN_PATTERNS if pattern.search(text)]
     for found in ASSIGNMENT.finditer(text):
         value = found.group("quoted") or found.group("bare")
-        low = value.lower()
-        if any(hint in low for hint in PLACEHOLDER_HINTS):
+        if is_placeholder(value):
             continue
         if found.group("bare") and not (re.search(r"[A-Za-z]", value) and re.search(r"\d", value)):
             continue  # an unquoted plain word is ordinary writing, not a key

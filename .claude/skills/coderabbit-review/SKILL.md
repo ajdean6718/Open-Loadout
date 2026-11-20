@@ -183,7 +183,13 @@ Comments on GitHub appear under Anthony's name. Keep them short, factual, and fr
 
 ## Step 8: Merging
 
-Only merge when Anthony says so in plain words for that specific pull request, for example "merge PR 3". Before merging, read the pull request again and compare it with the last report: same latest commit, no new findings, no open must-fix items. If something changed, report first. If he asks to merge with must-fix items open, or with no review at all, tell him what is missing and confirm once. Use an ordinary merge, the same as earlier pull requests in this repo, unless he asks for something else.
+Only merge when Anthony says so in plain words for that specific pull request, for example "merge PR 3". Before merging, read the pull request again and check all of these:
+
+- CodeRabbit's latest review covers the pull request's latest commit. Each review names the commit it looked at. If anything was pushed after that, the newest change has not been reviewed, however clean the earlier review was.
+- The latest commit is the one in your last report.
+- There are no new findings and no open must-fix items.
+
+If the review is behind the latest commit, wait for CodeRabbit's re-check or ask for one, then report. If anything else changed, report first. If he asks to merge with must-fix items open, with no review at all, or with a review that does not cover the latest commit, tell him exactly what is missing and confirm once. When the merge tool lets you name the commit you expect, give it the commit from your report, so the merge stops if something was pushed in between. Use an ordinary merge, the same as earlier pull requests in this repo, unless he asks for something else.
 
 Never enable automatic merging, and never approve a pull request on his behalf.
 
