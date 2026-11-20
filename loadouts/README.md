@@ -2,4 +2,4 @@
 
 The product. One folder per loadout (for example `writing/`, `research/`, `planning/`).
 
-Each loadout starts as a copy of `templates/loadout-template/` and lives in its own folder with a `loadout.md` file. Plain markdown only, written so any AI can use it.
+Each loadout is one section of the kit and holds that section's skills, agents, and teams. The full planned list is in `docs/LIBRARY_MAP.md`. Plain markdown only, written so any AI can use it.

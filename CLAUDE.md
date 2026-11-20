@@ -9,7 +9,7 @@
 
 ## Purpose
 
-Open Loadout is an open-source kit that gears up any AI (Claude, ChatGPT, Gemini, and others) with almost no setup. A loadout is a ready-made bundle of instructions, skills, and workflows for one type of task, such as writing, research, or planning. It works in any app: desktop, web, or CLI. Anyone who downloads it can customize it.
+Open Loadout is an open-source kit that gears up any AI (Claude, ChatGPT, Gemini, and others) with almost no setup. A loadout is a ready-made bundle of skills, agents, and teams for one area of work or life, such as writing, research, or money. It works in any app: desktop, web, or CLI. Anyone who downloads it can customize it.
 
 ## Audience
 
@@ -27,10 +27,10 @@ Everyday to intermediate users. Non-technical users come first. If a step needs 
 
 ## Folder map
 
-- `loadouts/` - the product. One folder per loadout.
+- `loadouts/` - the product. One folder per loadout. Each holds that section's skills, agents, and teams.
 - `adapters/` - thin per-tool files: claude, chatgpt, gemini, cli.
-- `templates/` - `loadout-template/loadout.md` is the starting point for every new loadout.
-- `docs/` - guides for users.
+- `templates/` - `loadout-template/loadout.md` is the old loadout skeleton. It will be replaced when the file formats are designed.
+- `docs/` - guides for users, the project brief, and `LIBRARY_MAP.md` (the map of every section, skill, agent, and team).
 - `tests/` - before and after test cases for loadouts.
 - `.claude/skills/` - installed build skills (see below).
 
