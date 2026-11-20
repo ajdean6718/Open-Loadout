@@ -44,3 +44,9 @@ Copied as is from Anthropic's public repositories. Do not edit them. The dash ru
 - **write-spec** - when turning an idea into a scoped plan with goals, non-goals, and done criteria.
 - **architecture** - when making or recording a structural decision, such as how adapters load loadouts.
 - **code-review** - before opening a pull request, to check the change for problems.
+
+## Pull request reviews
+
+- CodeRabbit reviews every pull request automatically. Its settings are in `.coderabbit.yaml`.
+- When Anthony asks about a review, a pull request's status, or what to fix, use the `coderabbit-review` skill in `.claude/skills/`. It is our own skill, not a copied one.
+- Never merge a pull request and never apply a review fix unless Anthony has approved that exact step in the chat.

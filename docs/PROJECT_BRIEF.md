@@ -180,6 +180,7 @@ Concern to keep in view: scope is large and the project promises simplicity to u
 7. Test improvements with before-and-after examples. If a loadout or agent does not clearly help, say so.
 8. Commit in logical chunks and write clear pull request summaries in plain language.
 9. Keep this brief current. When a decision changes, update it through a pull request.
+10. Every pull request is reviewed automatically by CodeRabbit (DECIDED 2026-11-20). Claude reports the results in plain language using the coderabbit-review skill. Nothing is merged automatically, and no review fix is applied without Anthony's approval.
 
 11. Open questions
 

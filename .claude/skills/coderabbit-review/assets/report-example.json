@@ -1,0 +1,109 @@
+{
+  "pr": {
+    "number": 12,
+    "title": "Example: add the research section",
+    "url": "https://github.com/OWNER/REPO/pull/12",
+    "head": "abc1234"
+  },
+  "generated": "1 Jan 2027, 09:30 UTC",
+  "reviewer": {
+    "name": "CodeRabbit",
+    "status": "review finished"
+  },
+  "reviewed": true,
+  "verdict": {
+    "state": "blocked",
+    "headline": "1 problem needs your decision before this is ready",
+    "detail": "CodeRabbit finished its review and found three things. You have already decided two of them. One real problem is still waiting. Nothing has been changed yet."
+  },
+  "steps": [
+    {
+      "label": "Pull request opened",
+      "state": "done",
+      "note": "1 Jan"
+    },
+    {
+      "label": "CodeRabbit review",
+      "state": "done",
+      "note": "Finished in 4 minutes"
+    },
+    {
+      "label": "Your decisions",
+      "state": "current",
+      "note": "1 waiting"
+    },
+    {
+      "label": "Fixes applied",
+      "state": "todo"
+    },
+    {
+      "label": "Ready to merge",
+      "state": "todo",
+      "note": "Only when you say so"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "level": "critical",
+      "title": "The totals table does not match the list",
+      "meaning": "The map says there are 40 skills, but one skill is listed twice, so the real number is 39. Anyone relying on the totals would be misled.",
+      "where": "docs/LIBRARY_MAP.md, line 41",
+      "source": "CodeRabbit",
+      "fix": "Remove the duplicate skill so the count is right.",
+      "decision": "waiting",
+      "technical": "Duplicate entry 'source-check' in two subsections. CodeRabbit severity: Major."
+    },
+    {
+      "id": "F2",
+      "level": "warning",
+      "title": "Two agents sound like they do the same job",
+      "meaning": "The Editor and the Polisher both say they tighten text. The router may not know which to pick.",
+      "where": "docs/LIBRARY_MAP.md, lines 112 to 118",
+      "source": "CodeRabbit",
+      "fix": "Reword the Polisher so it only handles final surface checks.",
+      "decision": "approved"
+    },
+    {
+      "id": "F3",
+      "level": "suggestion",
+      "title": "A heading uses a different style from the others",
+      "meaning": "Purely cosmetic.",
+      "where": "README.md, line 22",
+      "source": "CodeRabbit",
+      "fix": "Change the heading to match the rest.",
+      "decision": "rejected",
+      "note": "You said: leave it, the README is being rewritten."
+    }
+  ],
+  "passed": [
+    {
+      "label": "No long dashes",
+      "detail": "Only hyphens are used in the changed lines.",
+      "source": "Claude"
+    },
+    {
+      "label": "No passwords, keys, or email addresses",
+      "detail": "Nothing that looks like one was added.",
+      "source": "Claude"
+    },
+    {
+      "label": "No leftover merge markers",
+      "detail": "No unfinished merge text was left in the files.",
+      "source": "Claude"
+    },
+    {
+      "label": "Fits with the main version",
+      "detail": "GitHub says this can be merged without clashing with the main version of the project.",
+      "source": "GitHub"
+    }
+  ],
+  "next": [
+    "Tell Claude which fixes to make.",
+    "Claude makes only the approved fixes and CodeRabbit re-checks them.",
+    "You decide when to merge."
+  ],
+  "limits": [
+    "CodeRabbit reviews wording and structure. It cannot tell whether the list is the right list for your users."
+  ]
+}

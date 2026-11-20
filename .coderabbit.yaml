@@ -1,0 +1,109 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit settings for Open Loadout.
+# CodeRabbit reviews every pull request and leaves comments. That is all it may do here.
+# It must never approve, merge, or change files. Claude reports its findings to Anthony,
+# and Anthony decides what gets fixed. See .claude/skills/coderabbit-review/SKILL.md.
+
+language: en-US
+tone_instructions: "Write for a non-technical owner. Plain everyday words, short sentences, no jargon. Say what the problem means in practice. Use hyphens only, never em dashes or en dashes."
+early_access: false
+
+reviews:
+  profile: chill
+
+  # Review every pull request as soon as it opens, and again on each new push.
+  # Drafts are reviewed too, and reviews never pause, so "every pull request" has no exceptions.
+  auto_review:
+    enabled: true
+    drafts: true
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 0
+
+  # Never approve or request changes on its own. Comments only.
+  # The last line also blocks the commands that would close every review comment at once.
+  auto_approvals:
+    enabled: false
+    approve_on_skipped_review: false
+    allow_author_approval: false
+
+  # Never change files. Every "fix it for me" feature that has a switch is switched off.
+  # Two have no switch and can only be started by a comment or a checkbox. The review skill
+  # forbids both. Fixes are made by Claude, and only the ones Anthony approves.
+  finishing_touches:
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: false
+    autofix:
+      enabled: false
+    fix_ci:
+      enabled: false
+    resolve_merge_conflict:
+      enabled: false
+
+  # Never label pull requests or assign reviewers on its own.
+  auto_apply_labels: false
+  auto_assign_reviewers: false
+  suggested_labels: false
+  suggested_reviewers: false
+
+  # Keep the pull request description as written. Put the summary in CodeRabbit's own comment.
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+
+  # Leave out the extras that do not help on a writing-first repo.
+  sequence_diagrams: false
+  in_progress_fortune: false
+  poem: false
+
+  # Keep these on. Claude reads them to report progress and to understand each finding.
+  review_status: true
+  review_progress: true
+  enable_prompt_for_ai_agents: true
+
+  # Skip the skills copied from Anthropic. They are third-party files we never edit.
+  path_filters:
+    - "!.claude/skills/skill-creator/**"
+    - "!.claude/skills/doc-coauthoring/**"
+    - "!.claude/skills/product-brainstorming/**"
+    - "!.claude/skills/write-spec/**"
+    - "!.claude/skills/architecture/**"
+    - "!.claude/skills/code-review/**"
+
+  path_instructions:
+    - path: "**/*.md"
+      instructions: |
+        This repo is a kit of plain-markdown instructions for everyday, non-technical AI users.
+        Check each changed file against these house rules and report any break as a finding:
+        - No em dashes or en dashes anywhere. Hyphens only. Treat a break as Major.
+        - Plain language. Flag jargon, or a technical term used without a one-line explanation.
+        - No secrets, passwords, keys, or personal details such as private emails or phone numbers. Treat a break as Critical.
+        - Numbers and names must agree. If a total, count, or list is stated in one place, check it matches everywhere else it appears, including other files in the same pull request.
+        - Every link and file path mentioned should point to something that exists.
+        Do not suggest adding features, files, or sections that were not asked for. The repo rule is to build the smallest thing that works.
+    - path: "docs/PROJECT_BRIEF.md"
+      instructions: |
+        This file is the source of truth for project decisions. It is plain text on purpose, so ignore markdown formatting issues here.
+        Flag any change that contradicts another part of the brief, or that changes a decision marked DECIDED without saying so.
+    - path: "loadouts/**"
+      instructions: |
+        This is the product. Content must be model-neutral: it should work if pasted into Claude, ChatGPT, Gemini, or any other AI.
+        Flag anything that only works in one tool, and any setup step that needs a terminal or a config file.
+    - path: "adapters/**"
+      instructions: |
+        Adapters must stay thin. Flag any adapter that holds real content instead of pointing to the plain-markdown core.
+
+chat:
+  auto_reply: true
+  art: false
+
+# No automatic plans or labels on issues.
+issue_enrichment:
+  auto_enrich:
+    enabled: false
+  planning:
+    auto_planning:
+      enabled: false
+  labeling:
+    auto_apply_labels: false
